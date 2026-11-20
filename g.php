@@ -3377,7 +3377,6 @@ kbd{display:inline-block;padding:2px 8px;font-size:11px;font-family:var(--f-mono
       </select>
       <div class="vcap">Яркость подложки <b><span id="opVal">100</span>%</b></div>
       <input type="range" id="mapOpacity" min="20" max="100" value="100">
-      <div class="vrow"><label><input type="checkbox" id="tgRoutes" checked> 🧭 Линии маршрутов</label></div>
       <div class="vrow"><label><input type="checkbox" id="tgTrains" checked> 🚆 Поезда в движении</label></div>
       <div class="vrow"><label><input type="checkbox" id="tgBridges" checked> 🌉 Мосты и путепроводы</label></div>
       <div class="vrow"><label><input type="checkbox" id="tgNodes" checked> 🔩 Узлы веток</label></div>
@@ -3781,7 +3780,7 @@ function loadUI(){
   ui.accel=clamp(Number(ui.accel)||1.6,.3,5); ui.tlen=clamp(Number(ui.tlen)||18,10,34);
   syncMotionUI();
   el('gridOn').checked=ui.grid; el('gridSnap').checked=ui.snap; el('gridStep').value=ui.step;
-  el('tgRoutes').checked=ui.routes; el('tgTrains').checked=ui.trains; el('tgBridges').checked=ui.bridges;
+  el('tgTrains').checked=ui.trains; el('tgBridges').checked=ui.bridges;
   el('tgNodes').checked=ui.nodes; el('tgLabels').checked=ui.labels; el('tgForeign').checked=ui.foreign;
   el('tgFade').checked=ui.fade; el('tgAfford').checked=ui.afford;
   el('mapStyle').value=ui.style; el('mapOpacity').value=ui.opacity; el('opVal').textContent=ui.opacity;
@@ -3829,7 +3828,6 @@ function initMap(){
   el('gridOn').onchange=e=>{ui.grid=e.target.checked;drawGrid();saveUI();};
   el('gridSnap').onchange=e=>{ui.snap=e.target.checked;saveUI();};
   el('gridStep').onchange=e=>{ui.step=+e.target.value;drawGrid();saveUI();};
-  el('tgRoutes').onchange=e=>{ui.routes=e.target.checked;renderRoutes();saveUI();};
   el('tgTrains').onchange=e=>{ui.trains=e.target.checked;syncTrains();saveUI();};
   el('tgBridges').onchange=e=>{ui.bridges=e.target.checked;renderBridges();saveUI();};
   el('tgNodes').onchange=e=>{ui.nodes=e.target.checked;renderNodes();saveUI();};
@@ -4003,7 +4001,8 @@ function lotAfford(obj){
    ОТРИСОВКА: МАРШРУТЫ (цвет компании)
    ============================================================ */
 function renderRoutes(){
-  if(!map)return; routeLayer.clearLayers(); routeHitLayer.clearLayers(); if(!ui.routes)return;
+  // Линии маршрутов на карте отключены (рисовались параллельно перегону) — чистим слои и выходим.
+  if(!map)return; routeLayer.clearLayers(); routeHitLayer.clearLayers(); if(true)return;
   const usage=new Map(), live=(mode==='idle');
   world.routes.forEach(r=>{
     if(me&&r.owner_id!==me.id&&!ui.foreign)return;
