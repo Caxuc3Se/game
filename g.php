@@ -3604,6 +3604,10 @@ const DEPOT_UPG_COST=800, DEPOT_RADIUS=500, TRAIN_COST=800, TRAIN_UPK_RUN=3, TRA
 const REBASE_COST=200, REPAIR_RATIO=.10, REPAIR_FREE_M=1000, REFUND=.50;
 const ST_R_BASE=8, ST_R_CLASS=1.5, HEALTH_CRIT=20, CONSERV=.50, TRANSIT_UPK=.75;
 const BRIDGE_MIN_PX=26, BRIDGE_OFF_PX=6, BRIDGE_WING_PX=7, BRIDGE_WING_A=35*Math.PI/180;
+// Ширина «реки» под мостом в метрах (реальный размер): при зуме полоса сжимается вместе с картой,
+// и символ моста остаётся по ширине реки, а не фиксированным в пикселях.
+// 60 м = BRIDGE_WATER_HALF_WIDTH_M на сервере (половина ширины водной полосы).
+const BRIDGE_WATER_HALF_M = 60;
 const ROUTE_OFFSET_PX=12, EDGE_HIT_PX=16, ROUTE_HIT_PX=8, MAX_ANIM_TRAINS=80;
 const BASE_LAT=55.75, BASE_LNG=37.62;
 const CARTO_KEY='cb1_4pcc_1_c40db698b0c1ad6e7d443599';
@@ -4042,7 +4046,12 @@ function bridgeSymbol(br,edge,layer,preview=false){
   const axis=[P(-half,0),P(half,0)];
   const col=preview?'#ffb02e':(MAT_COLOR[bridgeMat(br.type)]||'#4a7fc1');
   const isRail=br.kind==='rail';
-  L.polyline(axis,{pane:'waterP',color:isRail?'#7d8aa0':'#3f7fbf',weight:Math.max(4,offPx*2-2),opacity:preview?.2:(building?.14:.3),lineCap:'butt',interactive:false}).addTo(layer);
+  // Ширина полосы «реки» = реальные метры (BRIDGE_WATER_HALF_M*2), а не пиксели:
+  // при отдалении она сжимается вместе с картой, и символ моста остаётся ровно по ширине реки.
+  const waterPx = (BRIDGE_WATER_HALF_M * 2) / mpp(br.lat);   // ширина реки в пикселях на текущем зуме
+  const minW = Math.min(10, Math.max(2, waterPx));           // нижняя граница, чтобы полосу было видно
+  const waterW = Math.max(waterPx, minW);
+  L.polyline(axis,{pane:'waterP',color:isRail?'#7d8aa0':'#3f7fbf',weight:waterW,opacity:preview?.2:(building?.14:.3),lineCap:'butt',interactive:false}).addTo(layer);
   L.polyline(segs,{pane:'bridgeP',color:'#fff',weight:4.6,opacity:preview?.5:.9,lineCap:'round',interactive:false}).addTo(layer);
   L.polyline(segs,{pane:'bridgeP',color:col,weight:2.6,opacity:building?.55:1,dashArray:(building||preview)?'4 3':null,lineCap:'round',interactive:false}).addTo(layer);
   if(preview||mode!=='idle')return;
