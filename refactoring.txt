@@ -1,0 +1,16 @@
+/ (docroot)
+├─ game.php            ← тонкий фронт-контроллер: define ROOT + require src/ + диспетчер
+├─ src/
+│  ├─ bootstrap.php    ← перф-логи, ApiError, sendJson, константы
+│  ├─ db.php           ← db(), meta, runTx, миграции колонок/таблиц
+│  ├─ world.php        ← worldGet/worldSave, санитария, индексы, prune
+│  ├─ players.php      ← куки, компании, политики, события, деньги
+│  ├─ geo.php          ← геометрия, проекции, bbox
+│  ├─ osm.php          ← OSM-DB, R*Tree-helper, скидки, препятствия, мосты
+│  ├─ economy.php      ← economy+кэш, routeCompute, содержание, стоимость
+│  ├─ tick.php         ← тик, стройки, износ, банкротства, аукционы
+│  ├─ render.php       ← decorateWorld
+│  └─ api/             ← обработчики экшенов по группам (build, trains, routes, market, info)
+├─ assets/  (позже: css/js фронта)
+├─ config.php          ← секреты, вне гита
+└─ img/trains/         ← спрайты, когда будут права
